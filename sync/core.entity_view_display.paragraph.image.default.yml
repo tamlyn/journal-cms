@@ -7,11 +7,12 @@ dependencies:
     - field.field.paragraph.image.field_block_html
     - field.field.paragraph.image.field_block_html_id
     - field.field.paragraph.image.field_block_image
-    - field.field.paragraph.image.field_block_image_inline
+    - field.field.paragraph.image.field_block_image_type
     - field.field.paragraph.image.field_block_label
     - paragraphs.paragraphs_type.image
   module:
     - image
+    - options
     - text
 id: paragraph.image.default
 targetEntityType: paragraph
@@ -49,15 +50,12 @@ content:
     third_party_settings: {  }
     type: image
     region: content
-  field_block_image_inline:
-    weight: 5
+  field_block_image_type:
+    weight: 6
     label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
+    settings: {  }
     third_party_settings: {  }
-    type: boolean
+    type: list_default
     region: content
   field_block_label:
     weight: 0

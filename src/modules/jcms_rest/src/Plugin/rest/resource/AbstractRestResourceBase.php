@@ -216,15 +216,34 @@ abstract class AbstractRestResourceBase extends ResourceBase {
               $result_item['image'] = $this->processFieldImage($content_item->get('field_block_image'), TRUE, 'banner', TRUE);
               $result_item['image'] = array_diff_key($result_item['image'], array_flip(['sizes']));
               if ($content_item->get('field_block_html')->count()) {
-                $result_item['title'] = $this->fieldValueFormatted($content_item->get('field_block_html'));
-                if (empty($result_item['title'])) {
-                  unset($result_item['title']);
+                if ($content_item->get('field_block_image_type')->getString() === 'profile') {
+                  $texts = $this->splitParagraphs($this->fieldValueFormatted($content_item->get('field_block_html'), FALSE));
+                  foreach ($texts as $text) {
+                    if (!is_array($text)) {
+                      $text = trim($text);
+                      if (!empty($text)) {
+                        $result_item['content'][] = [
+                          'type' => 'paragraph',
+                          'textx' => $text,
+                        ];
+                      }
+                    }
+                  }
+                  $result_item['type'] = 'profile';
+                }
+                else {
+                  $result_item['title'] = $this->fieldValueFormatted($content_item->get('field_block_html'));
+                  if (empty($result_item['title'])) {
+                    unset($result_item['title']);
+                  }
                 }
               }
-              if ($content_item->get('field_block_attribution')->count()) {
-                $result_item['image']['attribution'] = $this->fieldValueFormatted($content_item->get('field_block_attribution'), FALSE, TRUE);
+              if ($result_item['type'] !== 'profile') {
+                if ($content_item->get('field_block_attribution')->count()) {
+                  $result_item['image']['attribution'] = $this->fieldValueFormatted($content_item->get('field_block_attribution'), FALSE, TRUE);
+                }
+                $result_item = $this->processFigure($result_item, $content_item, $asset_ids[$content_type]);
               }
-              $result_item = $this->processFigure($result_item, $content_item, $asset_ids[$content_type]);
             }
             else {
               unset($result_item);
@@ -316,7 +335,7 @@ abstract class AbstractRestResourceBase extends ResourceBase {
         'assets' => [['id' => $asset_id, 'label' => $content_item->get('field_block_label')->getString()] + $data],
       ];
     }
-    elseif ($content_item->hasField('field_block_image_inline') && !!$content_item->get('field_block_image_inline')->getString()) {
+    elseif ($content_item->get('field_block_image_type')->getString() === 'inline') {
       $data['inline'] = TRUE;
     }
     return $data;

@@ -1121,3 +1121,43 @@ function jcms_migrate_update_8128() {
   $executable = new MigrateExecutable($plugins['jcms_subjects_json'], new MigrateMessage());
   $executable->import();
 }
+
+/**
+ * Enable config_import module.
+ */
+function jcms_migrate_update_8129() {
+  drupal_flush_all_caches();
+  \Drupal::service('module_installer')->install(['config_import']);
+}
+
+/**
+ * Transfer image block inline value to new type field.
+ */
+function jcms_migrate_update_8130() {
+  $config_importer = \Drupal::service('config_import.importer');
+  $configs = [
+    'field.field.paragraph.image.field_block_image_type',
+    'field.storage.paragraph.field_block_image_type',
+  ];
+  $config_importer->importConfigs($configs);
+  drupal_flush_all_caches();
+  $query = \Drupal::entityQuery('paragraph')
+    ->condition('type', 'image');
+  $ids = $query->execute();
+  if ($ids) {
+    $paragraphs = Paragraph::loadMultiple($ids);
+    if (!empty($paragraphs)) {
+      foreach ($paragraphs as $paragraph) {
+        if ($paragraph->hasField('field_block_image_inline') && !!$paragraph->get('field_block_image_inline')->getString()) {
+          $type = 'inline';
+          $paragraph->set('field_block_image_inline', 0);
+        }
+        else {
+          $type = 'default';
+        }
+        $paragraph->set('field_block_image_type', $type);
+        $paragraph->save();
+      }
+    }
+  }
+}

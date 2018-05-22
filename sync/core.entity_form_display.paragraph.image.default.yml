@@ -7,7 +7,7 @@ dependencies:
     - field.field.paragraph.image.field_block_html
     - field.field.paragraph.image.field_block_html_id
     - field.field.paragraph.image.field_block_image
-    - field.field.paragraph.image.field_block_image_inline
+    - field.field.paragraph.image.field_block_image_type
     - field.field.paragraph.image.field_block_label
     - image.style.thumbnail
     - paragraphs.paragraphs_type.image
@@ -53,12 +53,11 @@ content:
     third_party_settings: {  }
     type: image_focal_point
     region: content
-  field_block_image_inline:
-    weight: 5
-    settings:
-      display_label: true
+  field_block_image_type:
+    weight: 6
+    settings: {  }
     third_party_settings: {  }
-    type: boolean_checkbox
+    type: options_select
     region: content
   field_block_label:
     weight: 0
